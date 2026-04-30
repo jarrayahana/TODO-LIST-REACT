@@ -3,22 +3,45 @@ import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
 import heroImg from './assets/hero.png'
 import './App.css'
+import axios from 'axios'
 
 function App() {
   const [count, setCount] = useState(0)
-
+  const [tab,setTab]=useState(1)
+  const [task,setTask]=useState(null)
+  const handleTabs =(tab)=>{
+    setTab(tab)
+    console.log(tab);
+  }
+  const handleAddTask=(e)=>{
+    e.preventDefault();
+    console.log(task)
+    axios.post('http://localhost:5000/new-task',{task})
+  }
+  const useEffect=(()=>{
+    axios.get(`http://localhost:5000/read-tasks`)
+    .then(res=>{
+  console.log('here are the tasks:')
+  console.log(res.data);
+})
+  },[])
   return (
     
     <div className="bg-gray-100 w-screen h-screen">
       <div className="flex flex-col w-screen h-screen justify-center items-center">
         <div>
-          <h2 className="font-bold text 2xl">TODO LIST</h2>
+          <h2 className="font-bold text 2xl mb-4 ">TODO LIST</h2>
         </div>
         <div className="flex gap-3"> 
-          <input className=" w-64 p-2 outline-none border border-blue-300 rounded-md" type='text' placeholder="Enter a task to do"></input>
-          <button className='bg-blue-600 text-white px-4 rounded-md'>Add</button>
+          <input value={task} onChange={e=>setTask(e.target.value)}className=" w-64 p-2 outline-none border border-blue-300 rounded-md" type='text' placeholder="Enter a task to do"></input>
+          <button onClick={handleAddTask} className='bg-blue-600 text-white px-4 rounded-md'>Add</button>
         </div>
-        <div className='flex justify-between bg-white p-2 w-80'>
+        <div className='flex text-sm w-80 justify-evenly mt-4'>
+          <p onClick={(()=>handleTabs(1))} className={`${tab===1 ? 'text-blue-700':'text-black'} cursor-pointer`}>All</p>
+          <p onClick={(()=>handleTabs(2))} className={`${tab===2 ? 'text-blue-700':'text-black'} cursor-pointer`}>Active</p>
+          <p onClick={(()=>handleTabs(3))} className={`${tab===3 ? 'text-blue-700':'text-black'} cursor-pointer`}>Completed</p>
+        </div>
+        <div className='flex justify-between bg-white p-2 w-80 rounded-md'>
           <div>
             <p className='text-lg font-semibold'>
               task 1
@@ -31,9 +54,9 @@ function App() {
             </p>
           </div>
           <div className='flex flex-col text-sm justify-start'>
-            <button>Edit</button>
-            <button>Delete</button>
-            <button>Completed</button>
+            <button className='text-blue-600 cursor-pointer'>Edit</button>
+            <button className='text-red-500 cursor-pointer'>Delete</button>
+            <button className='text-green-600 cursor-pointer'>Completed</button>
           </div>
         </div>
       </div>
