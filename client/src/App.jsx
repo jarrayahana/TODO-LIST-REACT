@@ -9,6 +9,7 @@ function App() {
   const [count, setCount] = useState(0)
   const [tab,setTab]=useState(1)
   const [task,setTask]=useState(null)
+  const [todos,setTodos]=useState(null)
   const handleTabs =(tab)=>{
     setTab(tab)
     console.log(tab);
@@ -18,12 +19,16 @@ function App() {
     console.log(task)
     axios.post('http://localhost:5000/new-task',{task})
   }
-  const useEffect=(()=>{
+  var useEffect=(()=>{
     axios.get(`http://localhost:5000/read-tasks`)
     .then(res=>{
-  console.log('here are the tasks:')
-  console.log(res.data);
-})
+      console.log('here are the tasks:')
+      console.log(res);
+      setTodos(res);
+    })
+    .catch(err => {
+          console.error('Error fetching tasks:', err);
+        });
   },[])
   return (
     
@@ -41,26 +46,31 @@ function App() {
           <p onClick={(()=>handleTabs(2))} className={`${tab===2 ? 'text-blue-700':'text-black'} cursor-pointer`}>Active</p>
           <p onClick={(()=>handleTabs(3))} className={`${tab===3 ? 'text-blue-700':'text-black'} cursor-pointer`}>Completed</p>
         </div>
-        <div className='flex justify-between bg-white p-2 w-80 rounded-md'>
-          <div>
-            <p className='text-lg font-semibold'>
-              task 1
-            </p>
-            <p className='text-xs text-gray-600'>
-              10/12/2025 10:30
-            </p>
-            <p className='text-sm text-gray-700'>
-              Status: Active
-            </p>
-          </div>
-          <div className='flex flex-col text-sm justify-start'>
-            <button className='text-blue-600 cursor-pointer'>Edit</button>
-            <button className='text-red-500 cursor-pointer'>Delete</button>
-            <button className='text-green-600 cursor-pointer'>Completed</button>
-          </div>
-        </div>
-      </div>
-    </div>
+        
+        {
+          todos?.map(todo=>{
+                <div className='flex justify-between bg-white p-2 w-80 rounded-md'>
+                    <div>
+                      <p className='text-lg font-semibold'>
+                        todo.task
+                      </p>
+                      <p className='text-xs text-gray-600'>
+                        todo.createdAt
+                      </p>
+                      <p className='text-sm text-gray-700'>
+                        Status: Active
+                      </p>
+                    </div>
+                    <div className='flex flex-col text-sm justify-start'>
+                      <button className='text-blue-600 cursor-pointer'>Edit</button>
+                      <button className='text-red-500 cursor-pointer'>Delete</button>
+                      <button className='text-green-600 cursor-pointer'>Completed</button>
+                    </div>
+                  </div>
+                    })
+                  }
+                </div>
+            </div>
       
   )
 }

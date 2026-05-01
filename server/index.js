@@ -4,7 +4,14 @@ var bodyParser = require('body-parser')
 const app=express()
 
 app.use(express.json())
-app.use(cors())//cross-origin ressource sharing 
+const corsOptions = { 
+  // origin:'https://abc.onrender.com',
+  AccessControlAllowOrigin: '*',  
+  origin: '*',  
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE' 
+}
+app.use(cors(corsOptions))
+// app.use(cors({ credentials: true }))//cross-origin ressource sharing 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
 
@@ -56,6 +63,10 @@ app.get(`/read-tasks`,(req,res)=>{
         }else {
             console.log('got tasks succefully from db');
             console.log(result)
+//             res.setHeader('Access-Control-Allow-Origin', req.header('origin') 
+// || req.header('x-forwarded-host') || req.header('referer') || req.header('host'));
+// res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
             res.send(result)
         }
     })
