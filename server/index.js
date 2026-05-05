@@ -34,7 +34,8 @@ con.connect(function(err) {
   let sql = `CREATE TABLE IF NOT EXISTS todos (
     id INT AUTO_INCREMENT PRIMARY KEY, 
     task VARCHAR(255), 
-    createdAt DATE
+    createdAt DATETIME,
+    status VARCHAR(255)
   )`;
 
   con.query(sql, function (err, result) {
@@ -46,12 +47,16 @@ con.connect(function(err) {
 app.use(bodyParser.json()) 
 app.post('/new-task',(req, res)=>{
     console.log('here req:',req.body)
-    const q='insert into todos(task,createdAt) values (?,?)'
-    con.query(q,[req.body.task,new Date()],(error, result)=>{
+    const q='insert into todos(task,createdAt,status) values (?,?,?)'
+    con.query(q,[req.body.task,new Date(),'active'],(error, result)=>{
         if (error){
             console.log('failed to store task')
         }else {
             console.log('todo saved')
+            const updatedTasks= 'select * from todos';
+            con.query(updatedTasks,(error,newList)=>{
+                res.send(newList)
+            })
         }
     })
 })
@@ -63,9 +68,7 @@ app.get(`/read-tasks`,(req,res)=>{
         }else {
             console.log('got tasks succefully from db');
             console.log(result)
-//             res.setHeader('Access-Control-Allow-Origin', req.header('origin') 
-// || req.header('x-forwarded-host') || req.header('referer') || req.header('host'));
-// res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+
 res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
             res.send(result)
         }

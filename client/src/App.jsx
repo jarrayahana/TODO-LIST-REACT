@@ -1,4 +1,5 @@
-import { useState } from 'react'
+
+import React, { useEffect, useState } from 'react';
 import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
 import heroImg from './assets/hero.png'
@@ -8,8 +9,8 @@ import axios from 'axios'
 function App() {
   const [count, setCount] = useState(0)
   const [tab,setTab]=useState(1)
-  const [task,setTask]=useState(null)
-  const [todos,setTodos]=useState(null)
+  const [task,setTask]=useState('')
+  const [todos,setTodos]=useState([])
   const handleTabs =(tab)=>{
     setTab(tab)
     console.log(tab);
@@ -18,18 +19,28 @@ function App() {
     e.preventDefault();
     console.log(task)
     axios.post('http://localhost:5000/new-task',{task})
+    .then(res=>{
+      setTask('');
+      console.log("todos updated",res.data)
+      setTodos(res.data)
+    })
   }
-  var useEffect=(()=>{
+  useEffect(() => {
     axios.get(`http://localhost:5000/read-tasks`)
     .then(res=>{
       console.log('here are the tasks:')
-      console.log(res);
-      setTodos(res);
+      
+      setTodos(res.data);
+      console.log(todos);
     })
     .catch(err => {
           console.error('Error fetching tasks:', err);
         });
-  },[])
+  }, []);
+  // To log changes properly:
+// useEffect(() => {
+//             console.log(todos); // Logs when todos updates
+//           }, [todos]);
   return (
     
     <div className="bg-gray-100 w-screen h-screen">
@@ -48,26 +59,30 @@ function App() {
         </div>
         
         {
-          todos?.map(todo=>{
-                <div className='flex justify-between bg-white p-2 w-80 rounded-md'>
-                    <div>
-                      <p className='text-lg font-semibold'>
-                        todo.task
-                      </p>
-                      <p className='text-xs text-gray-600'>
-                        todo.createdAt
-                      </p>
-                      <p className='text-sm text-gray-700'>
-                        Status: Active
-                      </p>
-                    </div>
-                    <div className='flex flex-col text-sm justify-start'>
-                      <button className='text-blue-600 cursor-pointer'>Edit</button>
-                      <button className='text-red-500 cursor-pointer'>Delete</button>
-                      <button className='text-green-600 cursor-pointer'>Completed</button>
-                    </div>
-                  </div>
-                    })
+          
+          todos?.map((todo)=>(
+            
+                // console.log("todo:",todo.task);
+                    <div className='flex justify-between bg-white p-2 w-80 rounded-md'>
+                        <div>
+                          <p className='text-lg font-semibold'>
+                            {todo.task}
+                          </p>
+                          <p className='text-xs text-gray-600'>
+                            {new Date(todo.createdAt).toLocaleString()}
+                          </p>
+                          <p className='text-sm text-gray-700'>
+                            Status: {todo.status}
+                          </p>
+                        </div>
+                        <div className='flex flex-col text-sm justify-start'>
+                          <button className='text-blue-600 cursor-pointer'>Edit</button>
+                          <button className='text-red-500 cursor-pointer'>Delete</button>
+                          <button className='text-green-600 cursor-pointer'>Completed</button>
+                        </div>
+                      </div>
+                       
+          ))
                   }
                 </div>
             </div>
