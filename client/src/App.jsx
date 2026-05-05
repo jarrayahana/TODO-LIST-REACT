@@ -11,6 +11,7 @@ function App() {
   const [tab,setTab]=useState(1)
   const [task,setTask]=useState('')
   const [todos,setTodos]=useState([])
+  const [isEdit,setIsEdit]=useState(false);
   const handleTabs =(tab)=>{
     setTab(tab)
     console.log(tab);
@@ -37,10 +38,25 @@ function App() {
           console.error('Error fetching tasks:', err);
         });
   }, []);
-  // To log changes properly:
-// useEffect(() => {
-//             console.log(todos); // Logs when todos updates
-//           }, [todos]);
+  const [updateId,setUpdateId]=useState(null);
+  const [updateTask,setUpdateTask]=useState('');
+  var handleEdit=(id,task)=>{
+    setIsEdit(true);
+    console.log("id:",id, task);
+    setTask(task);
+    setUpdateId(id);
+    setUpdateTask(task)
+    
+  }
+  const UpdateTask=()=>{
+    console.log("updateId:",updateId, "updateTask:",task);
+    axios.post(`http://localhost:5000/update-task`,{updateId,task})
+    .then(res=>{
+      setTodos(res.data);
+      setTask('');
+      setIsEdit(false);
+    })
+  }
   return (
     
     <div className="bg-gray-100 w-screen h-screen">
@@ -49,8 +65,9 @@ function App() {
           <h2 className="font-bold text 2xl mb-4 ">TODO LIST</h2>
         </div>
         <div className="flex gap-3"> 
-          <input value={task} onChange={e=>setTask(e.target.value)}className=" w-64 p-2 outline-none border border-blue-300 rounded-md" type='text' placeholder="Enter a task to do"></input>
-          <button onClick={handleAddTask} className='bg-blue-600 text-white px-4 rounded-md'>Add</button>
+          <input value={task} onChange={e=>setTask(e.target.value)} className=" w-64 p-2 outline-none border border-blue-300 rounded-md" type='text' placeholder="Enter a task to do"></input>
+          {isEdit ? <button onClick={UpdateTask} className='bg-blue-600 text-white px-4 rounded-md'>Update</button> :
+          <button onClick={handleAddTask} className='bg-blue-600 text-white px-4 rounded-md'>Add </button>}
         </div>
         <div className='flex text-sm w-80 justify-evenly mt-4'>
           <p onClick={(()=>handleTabs(1))} className={`${tab===1 ? 'text-blue-700':'text-black'} cursor-pointer`}>All</p>
@@ -76,7 +93,7 @@ function App() {
                           </p>
                         </div>
                         <div className='flex flex-col text-sm justify-start'>
-                          <button className='text-blue-600 cursor-pointer'>Edit</button>
+                          <button className='text-blue-600 cursor-pointer' onClick={()=>handleEdit(todo.id,todo.task)}>Edit</button>
                           <button className='text-red-500 cursor-pointer'>Delete</button>
                           <button className='text-green-600 cursor-pointer'>Completed</button>
                         </div>

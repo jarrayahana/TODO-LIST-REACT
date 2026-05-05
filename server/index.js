@@ -74,4 +74,23 @@ res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
         }
     })
 })
+app.post(`/update-task`,(req,res)=>{
+    console.log('req:',req.body)
+    const q='update todos set task= ? where id= ?'
+    con.query(q,[req.body.task,req.body.updateId],(err,result)=>{
+        if(err){
+            console.log('failed to update')
+        }else{
+            console.log('updated succesfully!');
+            con.query('select * from todos',(err, result)=>{
+                if(err){
+                    console.log(err)
+                }else{
+                    console.log('updated todos',result);
+                    res.send(result)
+                }
+            })
+        }
+    })
+})
 app.listen(5000,()=>{console.log('server started')})
