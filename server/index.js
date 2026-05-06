@@ -93,4 +93,40 @@ app.post(`/update-task`,(req,res)=>{
         }
     })
 })
+app.post(`/delete-task`,(req,res)=>{
+    const q='delete from todos where id=?'
+    con.query(q,[req.body.id], (error,result)=>{
+        if(error){
+            console.log('failed to delete')
+        }else{
+            console.log("deleted successfuly")
+            con.query('select * from todos',(err, newList)=>{
+                if(err){
+                    console.log(err)
+                }else{
+                    console.log('updated todos after delete',newList);
+                    res.send(newList)
+                }
+            })
+        }
+    })
+})
+app.post(`/complete-task`,(req,res)=>{
+    const q='update todos set status =? where id=?'
+    con.query(q,['completed',req.body.id], (error,result)=>{
+        if(error){
+            console.log('failed to update complete')
+        }else{
+            console.log("pdated complete successfuly")
+            con.query('select * from todos',(err, newList)=>{
+                if(err){
+                    console.log(err)
+                }else{
+                    console.log('updated todos after update complete',newList);
+                    res.send(newList)
+                }
+            })
+        }
+    })
+})
 app.listen(5000,()=>{console.log('server started')})

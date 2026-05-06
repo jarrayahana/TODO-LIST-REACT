@@ -57,6 +57,22 @@ function App() {
       setIsEdit(false);
     })
   }
+  const handleDelete=(id)=>{
+    console.log("id to delete",id)
+    axios.post(`http://localhost:5000/delete-task`, {id})
+      .then(res=>{
+        console.log('after delelte list todos:',res.data)
+          setTodos(res.data);
+      })
+  }
+  const handleComplete=(id)=>{
+    console.log("id to delete",id)
+    axios.post(`http://localhost:5000/complete-task`, {id})
+      .then(res=>{
+        console.log('after delelte list todos:',res.data)
+          setTodos(res.data);
+      })
+  }
   return (
     
     <div className="bg-gray-100 w-screen h-screen">
@@ -77,7 +93,7 @@ function App() {
         
         {
           
-          todos?.map((todo)=>(
+          tab==1 && todos?.map((todo)=>(
             
                 // console.log("todo:",todo.task);
                     <div className='flex justify-between bg-white p-2 w-80 rounded-md'>
@@ -92,10 +108,62 @@ function App() {
                             Status: {todo.status}
                           </p>
                         </div>
-                        <div className='flex flex-col text-sm justify-start'>
+                        <div className='flex flex-col text-sm justify-start items-start'>
                           <button className='text-blue-600 cursor-pointer' onClick={()=>handleEdit(todo.id,todo.task)}>Edit</button>
-                          <button className='text-red-500 cursor-pointer'>Delete</button>
-                          <button className='text-green-600 cursor-pointer'>Completed</button>
+                          <button className='text-red-500 cursor-pointer' onClick={(()=>handleDelete(todo.id))}>Delete</button>
+                          <button className='text-green-600 cursor-pointer' onClick={()=>handleComplete(todo.id)}>Completed</button>
+                        </div>
+                      </div>
+                       
+          ))
+                  }
+                  {
+          
+          tab==2 && todos?.filter(todo=> todo.status=='active').map((todo)=>(
+            
+                // console.log("todo:",todo.task);
+                    <div className='flex justify-between bg-white p-2 w-80 rounded-md'>
+                        <div>
+                          <p className='text-lg font-semibold'>
+                            {todo.task}
+                          </p>
+                          <p className='text-xs text-gray-600'>
+                            {new Date(todo.createdAt).toLocaleString()}
+                          </p>
+                          <p className='text-sm text-gray-700'>
+                            Status: {todo.status}
+                          </p>
+                        </div>
+                        <div className='flex flex-col text-sm justify-start items-start'>
+                          <button className='text-blue-600 cursor-pointer' onClick={()=>handleEdit(todo.id,todo.task)}>Edit</button>
+                          <button className='text-red-500 cursor-pointer' onClick={(()=>handleDelete(todo.id))}>Delete</button>
+                          <button className='text-green-600 cursor-pointer' onClick={()=>handleComplete(todo.id)}>Completed</button>
+                        </div>
+                      </div>
+                       
+          ))
+                  }
+                  {
+          
+          tab==3 && todos?.filter(todo=> todo.status=='completed').map((todo)=>(
+            
+                // console.log("todo:",todo.task);
+                    <div className='flex justify-between bg-white p-2 w-80 rounded-md'>
+                        <div>
+                          <p className='text-lg font-semibold'>
+                            {todo.task}
+                          </p>
+                          <p className='text-xs text-gray-600'>
+                            {new Date(todo.createdAt).toLocaleString()}
+                          </p>
+                          <p className='text-sm text-gray-700'>
+                            Status: {todo.status}
+                          </p>
+                        </div>
+                        <div className='flex flex-col text-sm justify-center items-center'>
+                          
+                          <button className='text-red-500 cursor-pointer' onClick={(()=>handleDelete(todo.id))}>Delete</button>
+                          
                         </div>
                       </div>
                        
